@@ -1,0 +1,28 @@
+{% load i18n %}
+
+<div class="clearfix">
+    <div class="input">
+        <table class="table table-striped table-hover">
+            <thead>
+                <tr>
+                    <th></th>
+                {% for col_key, col_name in qdict.columns %}
+                    <th>{{ col_name }}</th>
+                {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for choice, key, is_selected, selected_col_key in qdict.choices %}
+                <tr>
+                    <th>{{ choice.text }}</th>
+                    {% for col_key, col_name in qdict.columns %}
+                    <td>
+                        <input onClick="valchanged('{{ question.number }}_{{ choice.value }}', this.checked);" type="radio" id="{{ key }}" name="{{ key }}" value="{{ col_key }}__{{ choice.value }}"{% if is_selected and col_key == selected_col_key %} checked{% endif %}>
+                    </td>
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>

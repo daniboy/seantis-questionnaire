@@ -4,6 +4,7 @@ from django.utils.translation import ugettext as _
 
 import simple           # store value as returned
 import choice           # multiple choice, do checks
+import grid             # grid of radios
 import range_or_number  # range of numbers
 import timeperiod       # time periods
 import custom           # backwards compatibility support
