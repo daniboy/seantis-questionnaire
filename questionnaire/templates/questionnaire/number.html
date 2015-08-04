@@ -1,6 +1,6 @@
 <div class="clearfix rangeinput">
     <div class="input">
-        <input name="question_{{ question.number }}" type="{{ question.type }}" min="{{ qdict.rmin }}" max="{{ qdict.rmax }}" step="{{ qdict.rstep }}" value="{{ qdict.current }}">
+        <input name="question_{{ question.number }}" type="{{ question.type }}"{% if qdict.rmin %} min="{{ qdict.rmin }}"{% endif %}{% if qdict.rmax %} max="{{ qdict.rmax }}"{% endif %} step="{{ qdict.rstep }}"{% if qdict.current %} value="{{ qdict.current }}"{% endif %}>
     </div>
     <label data-unit="{{ qdict.runit }}">{{ qdict.runit }}</label>
     {% if question.extra %}

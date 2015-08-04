@@ -10,15 +10,16 @@ def question_range_or_number(request, question):
     rmin, rmax = parse_range(cd)
     rstep = parse_step(cd)
     runit = cd.get('unit', '')
+    required = cd.get('required', False)
     
-    current = request.POST.get('question_%s' % question.number, rmin)   
+    current = request.POST.get('question_%s' % question.number, None)
 
     jsinclude = []
     if question.type == 'range':
         jsinclude = [settings.STATIC_URL+'range.js']
 
     return {
-        'required' : True,
+        'required' : required,
         'type': question.type,
         'rmin' : rmin,
         'rmax' : rmax,
@@ -36,10 +37,11 @@ def process_range_or_number(question, answer):
     rstep = parse_step(cd)
 
     convert = range_type(rmin, rmax, rstep)
+    required = question.getcheckdict().get('required', 0)
 
     ans = answer['ANSWER']
     if not ans:
-        if question.is_required():
+        if required:
             raise AnswerException(_(u"Field cannot be blank"))
         else:
             return []
@@ -49,7 +51,7 @@ def process_range_or_number(question, answer):
     except:
        raise AnswerException(_(u"Could not convert the number"))
     
-    if ans > convert(rmax) or ans < convert(rmin):
+    if (rmax is not None and ans > convert(rmax)) or (rmin is not None and ans < convert(rmin)):
         raise AnswerException(_(u"Out of range"))
 
     return dumps([ans])
@@ -60,12 +62,15 @@ add_type('number', 'Number [input]')
 def parse_range(checkdict):
     "Given a checkdict for a range widget return the min and max string values."
 
-    Range = checkdict.get('range', '1-5')
+    rmin, rmax = None, None
+    range = checkdict.get('range', None)
 
     try:
-        rmin, rmax = Range.split('-', 1)
+        if range:
+            rmin, rmax = range.split('-', 1)
+            rmin, rmax = rmin or None, rmax or None
     except ValueError:
-        rmin, rmax = '1', '5'
+        pass
 
     return rmin, rmax
 
@@ -87,7 +92,7 @@ def range_type(rmin, rmax, step):
 
 def digits(number):
     "Given a number as string return the number of digits after 0."
-    if '.' in number or ',' in number:
+    if number is not None and ('.' in number or ',' in number):
         if '.' in number:
             return len(number.split('.')[1])
         else:
